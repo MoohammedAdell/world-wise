@@ -6,8 +6,44 @@ import Login from "./pages/Login";
 import AppLayout from "./pages/AppLayout";
 import PageNotFound from "./pages/PageNotFound";
 import City from "./components/City";
+import CityList from "./components/CityList";
+import { useEffect, useState } from "react";
+import CountryList from "./components/CountryList";
 
 function App() {
+  const [cities, setCities] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const BASE_URL = "http://localhost:9000";
+
+  useEffect(() => {
+    async function fetchCities() {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`${BASE_URL}/cities`);
+        const data = await res.json();
+        setCities(data);
+      } catch {
+        alert("somthing went wrong");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchCities();
+  }, []);
+
+  const deleteCity = async (id) => {
+    try {
+      await fetch(`${BASE_URL}/cities/${id}`, {
+        method: "DELETE",
+      });
+
+      setCities((prev) => prev.filter((city) => city.id !== id));
+    } catch (error) {
+      console.error("Error deleting city:", error);
+    }
+  };
+
   return (
     <div className="">
       <Routes>
@@ -16,9 +52,30 @@ function App() {
         <Route path="product" element={<Product />} />
         <Route path="login" element={<Login />} />
         <Route path="app" element={<AppLayout />}>
-          <Route index element={<p>hello cities</p>} />
-          <Route path="cities" element={<p>hello cities</p>} />
-          <Route path="countries" element={<p>hello countries</p>} />
+          <Route
+            index
+            element={
+              <CityList
+                cities={cities}
+                isLoading={isLoading}
+                deleteCity={deleteCity}
+              />
+            }
+          />
+          <Route
+            path="cities"
+            element={
+              <CityList
+                cities={cities}
+                isLoading={isLoading}
+                deleteCity={deleteCity}
+              />
+            }
+          />
+          <Route
+            path="countries"
+            element={<CountryList cities={cities} isLoading={isLoading} />}
+          />
           <Route path="form" element={<p>hello form</p>} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
