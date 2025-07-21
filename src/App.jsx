@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
+
 import Homepage from "./pages/Homepage";
 import Pricing from "./pages/Pricing";
 import Product from "./pages/Product";
@@ -7,7 +9,6 @@ import AppLayout from "./pages/AppLayout";
 import PageNotFound from "./pages/PageNotFound";
 import City from "./components/City";
 import CityList from "./components/CityList";
-import { useEffect, useState } from "react";
 import CountryList from "./components/CountryList";
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
               />
             }
           />
+          <Route path="cities/:id" element={<City />} />
           <Route
             path="countries"
             element={<CountryList cities={cities} isLoading={isLoading} />}
